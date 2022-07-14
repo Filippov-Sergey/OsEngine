@@ -90,18 +90,34 @@ namespace OsEngine.Robots.PriceChanel.Model
 
             List<Position> positions = _tab.PositionsOpenAll;
 
-            // открываем позицию в лонг -------------------------------------------------
+            // эксперемент --------------------------------------------------------------
 
+
+            //---------------------------------------------------------------------------
+            // открываем позицию в лонг -------------------------------------------------
+            
             if (DirectionOfTrade.ValueString == "Long" || DirectionOfTrade.ValueString == "Long & Short")
+            //if (DirectionOfTrade.ValueString == "Long")
             {
-                if (candle.Close > lastUp && candle.Open < lastUp && positions.Count == 0)
+                //if (candle.Close > lastUp && candle.Open < lastUp && positions.Count == 0)
+                if (candle.Close > lastUp && candle.Open < lastUp && (positions.Count == 0 || _tab.PositionOpenShort.Count > 0))
                 {
                     decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
                     decimal costPriceStep = _tab.Securiti.PriceStepCost;
                     costPriceStep = 1; // для теста на Si
                     decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
                     decimal lot = riskMoney / steps * costPriceStep;
-                    _tab.BuyAtMarket((int)lot);
+
+                    if (positions.Count == 0)
+                    {
+                        _tab.BuyAtMarket((int)lot);
+                    }
+                    
+                    if (_tab.PositionOpenShort.Count > 0)
+                    {
+                        _tab.CloseAllAtMarket();
+                        _tab.BuyAtMarket((int)lot);
+                    }
                 }
             }
 
@@ -109,21 +125,63 @@ namespace OsEngine.Robots.PriceChanel.Model
             // открываем позицию в шорт -------------------------------------------------
 
             if (DirectionOfTrade.ValueString == "Short" || DirectionOfTrade.ValueString == "Long & Short")
+            //if (DirectionOfTrade.ValueString == "Short")
             {
-                if (candle.Close < lastDown && candle.Open > lastDown && positions.Count == 0)
+                //if (candle.Close < lastDown && candle.Open > lastDown && positions.Count == 0)
+                if (candle.Close < lastDown && candle.Open > lastDown && (positions.Count == 0 || _tab.PositionOpenLong.Count > 0))
                 {
                     decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
                     decimal costPriceStep = _tab.Securiti.PriceStepCost;
                     costPriceStep = 1; // для теста на Si
                     decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
                     decimal lot = riskMoney / steps * costPriceStep;
+
+                    if (positions.Count == 0)
+                    {
+                        _tab.SellAtMarket((int)lot);
+                    }
+
+                    if (_tab.PositionOpenLong.Count > 0)
+                    {
+                        _tab.CloseAllAtMarket();
+                        _tab.SellAtMarket((int)lot);
+                    }
+
+                }
+            }
+            
+            //---------------------------------------------------------------------------
+            // открываем позицию в лонг и в шорт ----------------------------------------
+            /*
+            if (DirectionOfTrade.ValueString == "Long & Short")
+            {
+                if (candle.Close > lastUp && candle.Open < lastUp)
+                {
+                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
+                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
+                    costPriceStep = 1; // для теста на Si
+                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
+                    decimal lot = riskMoney / steps * costPriceStep * 2;
+
+                    _tab.BuyAtMarket((int)lot);
+                }
+                
+                if (candle.Close < lastDown && candle.Open > lastDown && positions.Count > 0)
+                {
+                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
+                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
+                    costPriceStep = 1; // для теста на Si
+                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
+                    decimal lot = riskMoney / steps * costPriceStep * 2;
+                    
                     _tab.SellAtMarket((int)lot);
                 }
             }
-
+            */
             //---------------------------------------------------------------------------
 
-            if (positions.Count > 0)
+            if (positions.Count > 0 && DirectionOfTrade.ValueString != "Long & Short")
+            //if (positions.Count > 0)
             {
                 Traling(positions); // выставляет треёлинг стоп
             }
