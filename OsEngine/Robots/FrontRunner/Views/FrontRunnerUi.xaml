@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OsEngine.Robots.FrontRunner.Views"
         mc:Ignorable="d"
-        Title="FrontRunnerUi" Height="350" Width="800">
+        Title="FrontRunnerUi" Height="400" Width="800">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="20"/>
@@ -32,19 +32,21 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <TextBlock Text="Крупный объём" Margin="20,0,0,0"/>
-        <TextBlock Text="Отступ" Grid.Row="1" Margin="20,0,0,0"/>
-        <TextBlock Text="Тейк профит" Grid.Row="2" Margin="20,0,0,0"/>
-        <TextBlock Text="Лот" Grid.Row="3" Margin="20,0,0,0"/>
+        <TextBlock Text="Искать крупный объём от " Margin="20,0,0,0"/>
+        <TextBlock Text="Отступ от крупного объёма" Grid.Row="1" Margin="20,0,0,0"/>
+        <TextBlock Text="Размер тейк профита" Grid.Row="2" Margin="20,0,0,0"/>
+        <TextBlock Text="Размер позиции, лот" Grid.Row="3" Margin="20,0,0,0"/>
 
         <TextBlock Text="Статус сделки" Grid.Row="5" Margin="20,0,0,0"/>
         <TextBlock Text="Лотов в открытой позиции" Grid.Row="6" Margin="20,0,0,0"/>
         <TextBlock Text="Цена открытия" Grid.Row="7" Margin="20,0,0,0"/>
-        <TextBlock Text="Тейк профит" Grid.Row="8" Margin="20,0,0,0"/>
-        <TextBlock Text="Цена тейк профита" Grid.Row="9" Margin="20,0,0,0"/>
+        <TextBlock Text="Цена тейк профита" Grid.Row="8" Margin="20,0,0,0"/>
+        <TextBlock Text="Вариационная маржа" Grid.Row="9" Margin="20,0,0,0"/>
+        <TextBlock Text="Накопленная прибыль" Grid.Row="10" Margin="20,0,0,0"/>
 
         <TextBlock Text="{Binding ShowDirection}"
                  Grid.Column="1"
@@ -55,12 +57,15 @@
         <TextBlock Text="{Binding ShowOpenPrice}"
                  Grid.Column="1"
                  Grid.Row="7"/>
-        <TextBlock Text="{Binding ShowTake}"
-                 Grid.Column="1"
-                 Grid.Row="8"/>
         <TextBlock Text="{Binding ShowTakePrice}"
                  Grid.Column="1"
+                 Grid.Row="8"/>
+        <TextBlock Text="{Binding ShowVariationMargin}"
+                 Grid.Column="1"
                  Grid.Row="9"/>
+        <TextBlock Text="{Binding ShowAccumulatedProfit}"
+                 Grid.Column="1"
+                 Grid.Row="10"/>
 
         <TextBox Text="{Binding BigVolume}"
                  Grid.Column="1"

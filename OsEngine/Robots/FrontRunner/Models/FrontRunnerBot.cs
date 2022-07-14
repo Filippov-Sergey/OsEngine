@@ -21,6 +21,7 @@ namespace OsEngine.Robots.FrontRunner.Models
             TabCreate(BotTabType.Simple);
             _tab = TabsSimple[0];
             _tab.MarketDepthUpdateEvent += _tab_MarketDepthUpdateEvent; // подписывается на событие изменение стакана
+            _tab.PositionClosingSuccesEvent += _tab_PositionClosingSuccesEvent;
         }
 
         #endregion --------------------------------------------------------------------------------
@@ -39,8 +40,9 @@ namespace OsEngine.Robots.FrontRunner.Models
         public string ShowDirection { get; private set; }
         public decimal ShowOpenVolume { get; private set; }
         public decimal ShowOpenPrice { get; private set; }
-        public string ShowTake { get; private set; }
         public decimal ShowTakePrice { get; private set; }
+        public decimal ShowVariationMargin { get; private set; }
+        public decimal ShowAccumulatedProfit { get; private set; }
 
         public Edit Edit
         {
@@ -62,6 +64,20 @@ namespace OsEngine.Robots.FrontRunner.Models
         #endregion --------------------------------------------------------------------------------
         #region Methods ---------------------------------------------------------------------------
 
+        private void _tab_PositionClosingSuccesEvent(Position position)
+        {
+            if (position.Direction == Side.Buy)
+            {
+                ShowAccumulatedProfit += (position.ClosePrice - position.EntryPrice) * position.MaxVolume * _tab.Securiti.Lot;
+            }
+            else if (position.Direction == Side.Sell)
+            {
+                ShowAccumulatedProfit += (position.EntryPrice - position.ClosePrice) * position.MaxVolume * _tab.Securiti.Lot;
+            }
+
+            EventTradeDelegate?.Invoke();
+        }
+
         private void _tab_MarketDepthUpdateEvent(MarketDepth marketDepth)
         {
             if (Edit == Edit.Stop)
@@ -69,8 +85,9 @@ namespace OsEngine.Robots.FrontRunner.Models
                 ShowDirection = "Робот остановлен";
                 ShowOpenVolume = 0;
                 ShowOpenPrice = 0;
-                ShowTake = "Не выставлен";
                 ShowTakePrice = 0;
+                ShowVariationMargin = 0;
+                ShowAccumulatedProfit = 0;
 
                 EventTradeDelegate?.Invoke();
                 
@@ -126,8 +143,8 @@ namespace OsEngine.Robots.FrontRunner.Models
                 ShowDirection = "Определяю";
                 ShowOpenVolume = 0;
                 ShowOpenPrice = 0;
-                ShowTake = "Не выставлен";
                 ShowTakePrice = 0;
+                ShowVariationMargin = 0;
             }
             else
             {
@@ -153,11 +170,6 @@ namespace OsEngine.Robots.FrontRunner.Models
                 {
                     if (Position.State == PositionStateType.Open)
                     {
-                        if (Position.ProfitOrderIsActiv)
-                        {
-                            ShowTake = "Выставлен";
-                        }
-
                         ShowTakePrice = Position.ProfitOrderPrice;
                     }
 
@@ -225,8 +237,6 @@ namespace OsEngine.Robots.FrontRunner.Models
                         Position = null;
                     }
                 }
-
-                EventTradeDelegate?.Invoke();
             }
             
             bool FlagBigValumeLong = false;
@@ -251,11 +261,6 @@ namespace OsEngine.Robots.FrontRunner.Models
                     
                     if (Position.State == PositionStateType.Open)
                     {
-                        if (Position.ProfitOrderIsActiv)
-                        {
-                            ShowTake = "Выставлен";
-                        }
-
                         ShowTakePrice  = Position.ProfitOrderPrice;
                     }
 
@@ -320,9 +325,14 @@ namespace OsEngine.Robots.FrontRunner.Models
                         Position = null;
                     }
                 }
-
-                EventTradeDelegate?.Invoke();
             }
+
+            if (Position != null)
+            {
+                ShowVariationMargin = Position.ProfitOperationPunkt * Position.MaxVolume * _tab.Securiti.Lot;
+            }
+
+            EventTradeDelegate?.Invoke();
         }
 
         public override string GetNameStrategyType()

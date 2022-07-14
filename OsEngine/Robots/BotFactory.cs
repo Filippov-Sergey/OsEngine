@@ -27,7 +27,6 @@ using OsEngine.Robots.My_Robot.Model;
 using OsEngine.Robots.MyRobot_017.Model;
 using OsEngine.Robots.FrontRunner;
 using OsEngine.Robots.FrontRunner.Models;
-using OsEngine.Robots.FrontRunner_2.Model;
 
 namespace OsEngine.Robots
 {
@@ -45,7 +44,6 @@ namespace OsEngine.Robots
             
             result.Add("ClassMyRobot"); // добавил своего робота
             result.Add("FrontRunnerBot"); // добавил своего робота
-            result.Add("botFrontRunner"); // добавил своего робота
 
             result.Add("SmaScreener");
             result.Add("Fisher");
@@ -126,11 +124,6 @@ namespace OsEngine.Robots
             {
                 bot = CreateScriptStrategyByName(nameClass, name, startProgram);
                 return bot;
-            }
-
-            if (nameClass == "botFrontRunner") // добавил своего робота
-            {
-                bot = new botFrontRunner(name, startProgram);
             }
 
             if (nameClass == "FrontRunnerBot") // добавил своего робота

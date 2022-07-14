@@ -97,17 +97,6 @@ namespace OsEngine.Robots.FrontRunner.ViewModels
         }
         private decimal _showOpenPrice;
 
-        public string ShowTake
-        {
-            get => _showTake;
-            set
-            {
-                _showTake = value;
-                OnPropertyChanged(nameof(ShowTake));
-            }
-        }
-        private string _showTake = "Не выставлен";
-
         public decimal ShowTakePrice
         {
             get => _showTakePrice;
@@ -118,7 +107,29 @@ namespace OsEngine.Robots.FrontRunner.ViewModels
             }
         }
         private decimal _showTakePrice;
-        
+
+        public decimal ShowVariationMargin
+        {
+            get => _showVariationMargin;
+            set
+            {
+                _showVariationMargin = value;
+                OnPropertyChanged(nameof(ShowVariationMargin));
+            }
+        }
+        private decimal _showVariationMargin;
+
+        public decimal ShowAccumulatedProfit
+        {
+            get => _showAccumulatedProfit;
+            set
+            {
+                _showAccumulatedProfit = value;
+                OnPropertyChanged(nameof(ShowAccumulatedProfit));
+            }
+        }
+        private decimal _showAccumulatedProfit;
+
         public Edit Edit
         {
             get => _bot.Edit;
@@ -168,8 +179,9 @@ namespace OsEngine.Robots.FrontRunner.ViewModels
             ShowDirection  = _bot.ShowDirection;
             ShowOpenVolume = _bot.ShowOpenVolume;
             ShowOpenPrice  = _bot.ShowOpenPrice;
-            ShowTake       = _bot.ShowTake;
             ShowTakePrice  = _bot.ShowTakePrice;
+            ShowVariationMargin = _bot.ShowVariationMargin;
+            ShowAccumulatedProfit = _bot.ShowAccumulatedProfit;
         }
 
         #endregion --------------------------------------------------------------------------------
