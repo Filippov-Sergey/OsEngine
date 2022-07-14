@@ -19,15 +19,20 @@ namespace OsEngine.Robots.PriceChanel.Model
             TabCreate(BotTabType.Simple); // создаёт вкладку
             _tab = TabsSimple[0]; // получает вкладку
 
-            // Indicators -------------------------------------------------------------------------
+            // Parameters -------------------------------------------------------------------------
 
+            Mode = CreateParameter("Mode", "Off", new[] { "Off", "On" });
+            CloseRevers = CreateParameter("Close / Revers", "Close", new[] { "Close", "Revers" });
+            DirectionOfTrade = CreateParameter("Direction Of Trade", "Long", new[] { "Long", "Short", "Long & Short" });
             LenghtUp = CreateParameter("Lenght Channel Up", 12, 5, 80, 2);
             LenghtDown = CreateParameter("Lenght Channel Down", 12, 5, 80, 2);
             Lot = CreateParameter("Lot", 10, 5, 20, 1);
             Risk = CreateParameter("Risk", 1m, 0.2m, 3m, 0.1m);
-            Mode = CreateParameter("Mode", "Off", new[] {"Off", "On"});
-            // создаём индикатор
-            _pc = IndicatorsFactory.CreateIndicatorByName("PriceChannel", name + "PriceChannel", false);
+
+            // ------------------------------------------------------------------------------------
+            // Indicators -------------------------------------------------------------------------
+
+            _pc = IndicatorsFactory.CreateIndicatorByName("PriceChannel", name + "PriceChannel", false); // создаём индикатор
             _pc.ParametersDigit[0].Value = LenghtUp.ValueInt; // параметры индикатора
             _pc.ParametersDigit[1].Value = LenghtDown.ValueInt; // параметры индикатора
             _pc = (Aindicator)_tab.CreateCandleIndicator(_pc, "Prime"); // вписываем индикатор для отображения
@@ -41,21 +46,20 @@ namespace OsEngine.Robots.PriceChanel.Model
         #endregion --------------------------------------------------------------------------------
         #region Fields ----------------------------------------------------------------------------
 
-        private BotTabSimple _tab; // вкладка
-        
-        // Indicators -----------------------------------------------------------------------------
-        
         private Aindicator _pc; // индикатор
+        private BotTabSimple _tab; // вкладка
 
-        // параметры индикатора
         private StrategyParameterString Mode;
-        
-        private StrategyParameterInt LenghtUp;
-        private StrategyParameterInt LenghtDown;
+        private StrategyParameterString CloseRevers;
+        private StrategyParameterString DirectionOfTrade;
+
         private StrategyParameterInt Lot;
-        
         private StrategyParameterDecimal Risk;
 
+        // параметры индикатора
+        private StrategyParameterInt LenghtUp;
+        private StrategyParameterInt LenghtDown;
+        
         // ----------------------------------------------------------------------------------------
 
         #endregion --------------------------------------------------------------------------------
@@ -82,20 +86,39 @@ namespace OsEngine.Robots.PriceChanel.Model
             decimal lastUp = _pc.DataSeries[0].Values[_pc.DataSeries[0].Values.Count - 2];
             decimal lastDown = _pc.DataSeries[1].Values[_pc.DataSeries[1].Values.Count - 2];
 
-            // trading logic ----------------------------------------------------------------------
+            // trading logic ======================================================================
 
             List<Position> positions = _tab.PositionsOpenAll;
 
             // открываем позицию в лонг -------------------------------------------------
 
-            if (candle.Close > lastUp && candle.Open < lastUp && positions.Count == 0)
+            if (DirectionOfTrade.ValueString == "Long" || DirectionOfTrade.ValueString == "Long & Short")
             {
-                decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
-                decimal costPriceStep = _tab.Securiti.PriceStepCost;
-                costPriceStep = 1; // для теста на Si
-                decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
-                decimal lot = riskMoney / steps * costPriceStep;
-                _tab.BuyAtMarket((int)lot);
+                if (candle.Close > lastUp && candle.Open < lastUp && positions.Count == 0)
+                {
+                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
+                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
+                    costPriceStep = 1; // для теста на Si
+                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
+                    decimal lot = riskMoney / steps * costPriceStep;
+                    _tab.BuyAtMarket((int)lot);
+                }
+            }
+
+            //---------------------------------------------------------------------------
+            // открываем позицию в шорт -------------------------------------------------
+
+            if (DirectionOfTrade.ValueString == "Short" || DirectionOfTrade.ValueString == "Long & Short")
+            {
+                if (candle.Close < lastDown && candle.Open > lastDown && positions.Count == 0)
+                {
+                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
+                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
+                    costPriceStep = 1; // для теста на Si
+                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
+                    decimal lot = riskMoney / steps * costPriceStep;
+                    _tab.SellAtMarket((int)lot);
+                }
             }
 
             //---------------------------------------------------------------------------
@@ -104,12 +127,14 @@ namespace OsEngine.Robots.PriceChanel.Model
             {
                 Traling(positions); // выставляет треёлинг стоп
             }
-            //-------------------------------------------------------------------------------------
+
+            //=====================================================================================
         }
         
-        // выставляет треёлинг стоп -----------------------------------------------------
+        // выставляет трейлинг стоп -----------------------------------------------------
         private void Traling(List<Position> positions)
         {
+            decimal lastUp = _pc.DataSeries[0].Values.Last();
             decimal lastDown = _pc.DataSeries[1].Values.Last();
 
             foreach (Position pos in positions)
@@ -119,6 +144,11 @@ namespace OsEngine.Robots.PriceChanel.Model
                     if (pos.Direction == Side.Buy)
                     {
                         _tab.CloseAtTrailingStop(pos, lastDown, lastDown - 100 * _tab.Securiti.PriceStep);
+                    }
+                    
+                    if (pos.Direction == Side.Sell)
+                    {
+                        _tab.CloseAtTrailingStop(pos, lastUp, lastUp + 100 * _tab.Securiti.PriceStep);
                     }
                 }
             }
