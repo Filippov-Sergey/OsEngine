@@ -151,34 +151,6 @@ namespace OsEngine.Robots.PriceChanel.Model
             }
             
             //---------------------------------------------------------------------------
-            // открываем позицию в лонг и в шорт ----------------------------------------
-            /*
-            if (DirectionOfTrade.ValueString == "Long & Short")
-            {
-                if (candle.Close > lastUp && candle.Open < lastUp)
-                {
-                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
-                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
-                    costPriceStep = 1; // для теста на Si
-                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
-                    decimal lot = riskMoney / steps * costPriceStep * 2;
-
-                    _tab.BuyAtMarket((int)lot);
-                }
-                
-                if (candle.Close < lastDown && candle.Open > lastDown && positions.Count > 0)
-                {
-                    decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
-                    decimal costPriceStep = _tab.Securiti.PriceStepCost;
-                    costPriceStep = 1; // для теста на Si
-                    decimal steps = (lastUp - lastDown) / _tab.Securiti.PriceStep;
-                    decimal lot = riskMoney / steps * costPriceStep * 2;
-                    
-                    _tab.SellAtMarket((int)lot);
-                }
-            }
-            */
-            //---------------------------------------------------------------------------
 
             if (positions.Count > 0 && DirectionOfTrade.ValueString != "Long & Short")
             //if (positions.Count > 0)
