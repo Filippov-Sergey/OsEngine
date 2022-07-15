@@ -22,8 +22,8 @@ namespace OsEngine.Robots.PriceChanel.Model
             // Parameters -------------------------------------------------------------------------
 
             Mode = CreateParameter("Mode", "Off", new[] { "Off", "On" });
-            CloseRevers = CreateParameter("Close / Revers", "Close", new[] { "Close", "Revers" });
-            DirectionOfTrade = CreateParameter("Direction Of Trade", "Long", new[] { "Long", "Short", "Long & Short" });
+            //CloseRevers = CreateParameter("Close / Revers", "Close", new[] { "Close", "Revers" });
+            DirectionOfTrade = CreateParameter("Direction Of Trade", "Long", new[] { "Long", "Short", "Long & Short Close", "Long & Short Revers" });
             LenghtUp = CreateParameter("Lenght Channel Up", 12, 5, 80, 2);
             LenghtDown = CreateParameter("Lenght Channel Down", 12, 5, 80, 2);
             Lot = CreateParameter("Lot", 10, 5, 20, 1);
@@ -50,7 +50,7 @@ namespace OsEngine.Robots.PriceChanel.Model
         private BotTabSimple _tab; // вкладка
 
         private StrategyParameterString Mode;
-        private StrategyParameterString CloseRevers;
+        //private StrategyParameterString CloseRevers;
         private StrategyParameterString DirectionOfTrade;
 
         private StrategyParameterInt Lot;
@@ -90,16 +90,10 @@ namespace OsEngine.Robots.PriceChanel.Model
 
             List<Position> positions = _tab.PositionsOpenAll;
 
-            // эксперемент --------------------------------------------------------------
-
-
-            //---------------------------------------------------------------------------
             // открываем позицию в лонг -------------------------------------------------
             
-            if (DirectionOfTrade.ValueString == "Long" || DirectionOfTrade.ValueString == "Long & Short")
-            //if (DirectionOfTrade.ValueString == "Long")
+            if (DirectionOfTrade.ValueString != "Short")
             {
-                //if (candle.Close > lastUp && candle.Open < lastUp && positions.Count == 0)
                 if (candle.Close > lastUp && candle.Open < lastUp && (positions.Count == 0 || _tab.PositionOpenShort.Count > 0))
                 {
                     decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
@@ -124,10 +118,8 @@ namespace OsEngine.Robots.PriceChanel.Model
             //---------------------------------------------------------------------------
             // открываем позицию в шорт -------------------------------------------------
 
-            if (DirectionOfTrade.ValueString == "Short" || DirectionOfTrade.ValueString == "Long & Short")
-            //if (DirectionOfTrade.ValueString == "Short")
+            if (DirectionOfTrade.ValueString != "Long")
             {
-                //if (candle.Close < lastDown && candle.Open > lastDown && positions.Count == 0)
                 if (candle.Close < lastDown && candle.Open > lastDown && (positions.Count == 0 || _tab.PositionOpenLong.Count > 0))
                 {
                     decimal riskMoney = _tab.Portfolio.ValueBegin * Risk.ValueDecimal / 100;
@@ -152,8 +144,7 @@ namespace OsEngine.Robots.PriceChanel.Model
             
             //---------------------------------------------------------------------------
 
-            if (positions.Count > 0 && DirectionOfTrade.ValueString != "Long & Short")
-            //if (positions.Count > 0)
+            if (positions.Count > 0 && DirectionOfTrade.ValueString != "Long & Short Revers")
             {
                 Traling(positions); // выставляет треёлинг стоп
             }
