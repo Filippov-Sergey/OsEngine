@@ -9,6 +9,7 @@ using ControlzEx.Standard;
 using System.Windows.Documents;
 using OsEngine.Market;
 using OsEngine.Robots.FrontRunner.Commands;
+using OsEngine.Views;
 
 namespace OsEngine.ViewModels
 {
@@ -40,6 +41,9 @@ namespace OsEngine.ViewModels
 
         #endregion --------------------------------------------------------------------------------
         #region Fields ----------------------------------------------------------------------------
+
+        public static ChangeEmitentWindow ChangeEmitentWindow = null;
+
         #endregion --------------------------------------------------------------------------------
         #region Commands --------------------------------------------------------------------------
 

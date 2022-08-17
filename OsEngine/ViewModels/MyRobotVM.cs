@@ -11,6 +11,7 @@ using OsEngine.Market;
 using OsEngine.Market.Servers;
 using OsEngine.MyEntity;
 using OsEngine.Robots.FrontRunner.Commands;
+using OsEngine.Views;
 
 namespace OsEngine.ViewModels
 {
@@ -127,9 +128,33 @@ namespace OsEngine.ViewModels
         #endregion --------------------------------------------------------------------------------
         #region Commands --------------------------------------------------------------------------
 
+        private DelegateCommand _commandSelectSecurity;
+        public DelegateCommand CommandSelectSecurity
+        {
+            get
+            {
+                if (_commandSelectSecurity == null)
+                {
+                    _commandSelectSecurity = new DelegateCommand(SelectSecurity);
+                }
+                return _commandSelectSecurity;
+            }
+        }
 
         #endregion --------------------------------------------------------------------------------
         #region Methods ---------------------------------------------------------------------------
+
+        void SelectSecurity(object o)
+        {
+            if (RobotWindowVM.ChangeEmitentWindow != null)
+            {
+                return;
+            }
+
+            RobotWindowVM.ChangeEmitentWindow = new ChangeEmitentWindow();
+            RobotWindowVM.ChangeEmitentWindow.ShowDialog();
+            RobotWindowVM.ChangeEmitentWindow = null;
+        }
 
         private Security GetSecurityForName(string name)
         {
