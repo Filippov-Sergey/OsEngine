@@ -28,6 +28,8 @@ using OsEngine.Robots.MyRobot_017.Model;
 using OsEngine.Robots.FrontRunner;
 using OsEngine.Robots.FrontRunner.Models;
 using OsEngine.Robots.PriceChanel.Model;
+using OsEngine.Robots.CryptoCluster;
+using OsEngine.Robots.HFT;
 
 namespace OsEngine.Robots
 {
@@ -46,6 +48,8 @@ namespace OsEngine.Robots
             result.Add("ClassMyRobot"); // добавил своего робота
             result.Add("FrontRunnerBot"); // добавил своего робота
             result.Add("PriceChanelFix"); // добавил своего робота
+            result.Add("RobotCluster"); // добавил своего робота
+            result.Add("HFTBot"); // добавил своего робота
 
             result.Add("SmaScreener");
             result.Add("Fisher");
@@ -126,6 +130,16 @@ namespace OsEngine.Robots
             {
                 bot = CreateScriptStrategyByName(nameClass, name, startProgram);
                 return bot;
+            }
+
+            if (nameClass == "HFTBot") // добавил своего робота
+            {
+                bot = new HFTBot(name, startProgram);
+            }
+
+            if (nameClass == "RobotCluster") // добавил своего робота
+            {
+                bot = new RobotCluster(name, startProgram);
             }
 
             if (nameClass == "PriceChanelFix") // добавил своего робота

@@ -22,6 +22,7 @@ using OsEngine.OsMiner;
 using OsEngine.OsOptimizer;
 using OsEngine.OsTrader.Gui;
 using OsEngine.PrimeSettings;
+using OsEngine.Views;
 
 namespace OsEngine
 {
@@ -95,7 +96,28 @@ namespace OsEngine
             CommandLineInterfaceProcess();
 
             Task.Run(ClearOptimizerWorkResults);
+
+            //-------------------------------------------------------------------------------------
+
+            this.Hide(); // делает окно невидимым
+            // StartMyWindow();
+            ProccesIsWorked = false;
+            this.Close();
+            Thread.Sleep(10000);
+            Process.GetCurrentProcess().Kill();  // убиваем все процессы принадлежащие этому приложению
+
+            //-------------------------------------------------------------------------------------
         }
+
+        //-----------------------------------------------------------------------------------------
+        /*
+        private void StartMyWindow()
+        {
+            MyRobot robot = new MyRobot();
+            robot.ShowDialog();
+        }
+        */
+        //-----------------------------------------------------------------------------------------
 
         private void ChangeText()
         {
